@@ -10,16 +10,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
-import com.example.watpato.home.HomeScreen
+import com.example.watpato.core.navigation.NavigationWrapper
 
 class MainActivity : ComponentActivity() {
 
-    // 1) Aquí declaramos la variable para manejar el resultado de la solicitud de permiso.
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -48,12 +43,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = Color.Red,
-            ) {
-                HomeScreen()
-            }
+            NavigationWrapper()
         }
     }
 }
