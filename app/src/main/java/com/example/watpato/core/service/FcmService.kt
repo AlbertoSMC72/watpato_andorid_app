@@ -1,4 +1,4 @@
-package com.example.watpato.home
+package com.example.watpato.core.service
 
 import android.app.NotificationManager
 import android.util.Log
