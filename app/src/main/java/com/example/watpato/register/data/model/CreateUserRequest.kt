@@ -1,6 +1,8 @@
 package com.example.watpato.register.data.model
 
 data class CreateUserRequest(
-    val nombre_usuario: String,
-    val contrasena: String
+    val username: String,
+    val email: String,
+    val password: String,
+    val firebaseToken: String?
 )

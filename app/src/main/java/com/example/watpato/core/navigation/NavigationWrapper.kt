@@ -15,7 +15,7 @@ import com.example.watpato.register.presentation.RegisterViewModel
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "AddBook") {
+    NavHost(navController = navController, startDestination = "Login") {
 
         composable("Login") {
             LoginScreen(LoginViewModel()) { destination ->

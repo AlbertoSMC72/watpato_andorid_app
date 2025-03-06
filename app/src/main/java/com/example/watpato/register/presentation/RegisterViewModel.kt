@@ -28,6 +28,13 @@ class RegisterViewModel : ViewModel() {
     private val _navigationCommand = MutableLiveData<String?>(null)
     val navigationCommand: LiveData<String?> = _navigationCommand
 
+    private var _email = MutableLiveData<String>()
+    val email: LiveData<String> = _email
+
+    fun onChangeEmail(email: String) {
+        _email.value = email
+    }
+
     fun onChangeUsername(username: String) {
         _username.value = username
     }
@@ -56,15 +63,20 @@ class RegisterViewModel : ViewModel() {
     suspend fun onClick(user: Any) {
         val usernameValue = _username.value.orEmpty()
         val passwordValue = _password.value.orEmpty()
+        val emailValue = _email.value.orEmpty()
 
         if (usernameValue.isBlank() || passwordValue.isBlank()) {
             _error.value = "Por favor, complete todos los campos"
             return
         }
 
+        val token = com.example.watpato.core.data.FirebaseTokenProvider.firebaseToken
+
         val user = CreateUserRequest(
-            nombre_usuario = usernameValue,
-            contrasena = passwordValue
+            username = usernameValue,
+            email = emailValue,
+            password = passwordValue,
+            firebaseToken = token
         )
 
         viewModelScope.launch {
@@ -72,7 +84,7 @@ class RegisterViewModel : ViewModel() {
             result.onSuccess {
                 _success.value = true
                 _error.value = ""
-                //redirigir
+                navigateToLogin()
             }.onFailure { exception ->
                 _success.value = false
                 _error.value = exception.message ?: "Error desconocido al crear el usuario"

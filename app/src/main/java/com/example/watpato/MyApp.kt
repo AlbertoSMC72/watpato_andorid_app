@@ -26,8 +26,7 @@ class MyApp : Application() {
                 return@addOnCompleteListener
             }
             val token = it.result
-            println("El valor del token es")
-            println(token)
+            com.example.watpato.core.data.FirebaseTokenProvider.firebaseToken = token
             Log.d("dbug", token)
         }
     }

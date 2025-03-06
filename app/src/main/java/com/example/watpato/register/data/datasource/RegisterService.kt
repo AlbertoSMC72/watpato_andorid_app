@@ -13,7 +13,7 @@ interface RegisterService {
     @GET("v3/9f81fd5c-05d2-4e1b-bae6-d3bd4eec084b")
     suspend fun validateUsername() : Response<UsernameValidateDTO>
 
-    @POST("app/user")
+    @POST("users")
     suspend fun createUser(@Body request: CreateUserRequest): Response<UserDTO>
     abstract fun login(mapOf: Map<String, String>): Any
 

@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
@@ -51,6 +52,7 @@ import com.example.watpato.ui.theme.Beige
 import com.example.watpato.ui.theme.GrayBlue
 import com.example.watpato.ui.theme.Teal
 import androidx.compose.runtime.LaunchedEffect
+import com.example.watpato.ui.theme.Coral
 
 @Preview(showBackground = true)
 @Composable
@@ -65,6 +67,7 @@ fun preview_RegisterScreen() {
 @Composable
 fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: (String) -> Unit) {
     val username: String by registerViewModel.username.observeAsState("")
+    val email: String by registerViewModel.email.observeAsState("")
     val password: String by registerViewModel.password.observeAsState("")
     val success: Boolean by registerViewModel.success.observeAsState(false)
     val error: String by registerViewModel.error.observeAsState("")
@@ -82,7 +85,7 @@ fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: (String) ->
         modifier = Modifier
             .fillMaxSize()
             .background(Teal)
-            .padding(16.dp),            // <--- Se agrega el padding de 16.dp
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -93,22 +96,34 @@ fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: (String) ->
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp) // Separación inferior
+                .padding(bottom = 16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
             value = username,
             onValueChange = { registerViewModel.onChangeUsername(it) },
-            label = { Text("Nombre de Usuario") },  // en español para mayor consistencia
+            label = { Text("Nombre de Usuario") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Person Icon") },
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         )
-
         Spacer(modifier = Modifier.height(16.dp))
+
+        TextField(
+            value = email,
+            onValueChange = { registerViewModel.onChangeEmail(it) },
+            label = { Text("Correo") },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Mail Icon") },
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
         TextField(
             value = password,
             onValueChange = { registerViewModel.onChangePassword(it) },
@@ -130,11 +145,10 @@ fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: (String) ->
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        // Si hay un mensaje de error, lo mostramos
         if (error.isNotEmpty()) {
             Text(
                 text = error,
-                color = GrayBlue, // o el color que prefieras para mostrar errores
+                color = Coral,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -143,7 +157,7 @@ fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: (String) ->
 
         Button(
             onClick = {
-                val user = CreateUserRequest(username, password)
+                val user = CreateUserRequest(username,email ,password, null)
                 registerViewModel.viewModelScope.launch {
                     registerViewModel.onClick(user)
                 }
