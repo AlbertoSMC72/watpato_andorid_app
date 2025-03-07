@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -49,7 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel, onNavigate: (String) -> Unit) {
-    val username: String by loginViewModel.username.observeAsState("")
+    val email: String by loginViewModel.email.observeAsState("")
     val password: String by loginViewModel.password.observeAsState("")
     val errorMessage: String? by loginViewModel.errorMessage.observeAsState(null)
     val isLoading: Boolean by loginViewModel.isLoading.observeAsState(false)
@@ -83,7 +82,7 @@ fun LoginScreen(loginViewModel: LoginViewModel, onNavigate: (String) -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
-            value = username,
+            value = email,
             onValueChange = { loginViewModel.onUsernameChange(it) },
             label = { Text("Correo") },
             leadingIcon = { Icon(Icons.Default.Mail, contentDescription = "Mail Icon") },

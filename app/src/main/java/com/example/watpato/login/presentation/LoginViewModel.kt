@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 class LoginViewModel : ViewModel() {
     private val loginUseCase = LoginUseCase()
 
-    private val _username = MutableLiveData("")
-    val username: LiveData<String> = _username
+    private val _email = MutableLiveData("")
+    val email: LiveData<String> = _email
 
     private val _password = MutableLiveData("")
     val password: LiveData<String> = _password
@@ -26,7 +26,7 @@ class LoginViewModel : ViewModel() {
     val navigationCommand: LiveData<String?> = _navigationCommand
 
     fun onUsernameChange(newUsername: String) {
-        _username.value = newUsername
+        _email.value = newUsername
     }
 
     fun onPasswordChange(newPassword: String) {
@@ -34,20 +34,20 @@ class LoginViewModel : ViewModel() {
     }
 
     fun onLoginClick() {
-        val usernameValue = _username.value.orEmpty()
+        val emailValue = _email.value.orEmpty()
         val passwordValue = _password.value.orEmpty()
 
-        if (usernameValue.isBlank() || passwordValue.isBlank()) {
+        if (emailValue.isBlank() || passwordValue.isBlank()) {
             _errorMessage.value = "Todos los campos son obligatorios"
             return
         }
 
         viewModelScope.launch {
             _isLoading.value = true
-            val result = loginUseCase(usernameValue, passwordValue)
+            val result = loginUseCase(emailValue, passwordValue)
             result.onSuccess { username ->
                 _errorMessage.value = null
-                _navigationCommand.value = "Countries"
+                _navigationCommand.value = "AddBook"
             }.onFailure { exception ->
                 _errorMessage.value = exception.message ?: "Error desconocido"
             }
