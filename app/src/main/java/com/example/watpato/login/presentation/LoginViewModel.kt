@@ -47,7 +47,7 @@ class LoginViewModel : ViewModel() {
             val result = loginUseCase(emailValue, passwordValue)
             result.onSuccess { username ->
                 _errorMessage.value = null
-                _navigationCommand.value = "AddBook"
+                _navigationCommand.value = "Home"
             }.onFailure { exception ->
                 _errorMessage.value = exception.message ?: "Error desconocido"
             }
