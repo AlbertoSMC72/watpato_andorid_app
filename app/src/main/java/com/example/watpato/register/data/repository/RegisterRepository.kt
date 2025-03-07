@@ -1,13 +1,15 @@
 package com.example.watpato.register.data.repository
 
 import com.example.watpato.core.network.RetrofitHelper
+import com.example.watpato.register.data.datasource.RegisterService
 import com.example.watpato.register.data.model.CreateUserRequest
 import com.example.watpato.register.data.model.UserDTO
 import com.example.watpato.register.data.model.UsernameValidateDTO
 
 
 class RegisterRepository()  {
-    private val registerService = RetrofitHelper.registerService
+
+    private val registerService = RetrofitHelper.createService(RegisterService::class.java)
 
     suspend fun validateUsername() : Result<UsernameValidateDTO>  {
         return try {

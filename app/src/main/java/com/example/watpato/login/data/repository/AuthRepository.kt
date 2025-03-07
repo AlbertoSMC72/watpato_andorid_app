@@ -10,8 +10,8 @@ class AuthRepository {
         return try {
             val response = authService.login(
                 mapOf(
-                    "nombre_usuario" to username,
-                    "contrasena" to password
+                    "email" to username,
+                    "password" to password
                 )
             )
             if (response.isSuccessful) {

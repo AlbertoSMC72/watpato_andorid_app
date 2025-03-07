@@ -45,7 +45,7 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             val result = loginUseCase(usernameValue, passwordValue)
-            result.onSuccess { token ->
+            result.onSuccess { username ->
                 _errorMessage.value = null
                 _navigationCommand.value = "Countries"
             }.onFailure { exception ->

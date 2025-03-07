@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -84,8 +85,8 @@ fun LoginScreen(loginViewModel: LoginViewModel, onNavigate: (String) -> Unit) {
         TextField(
             value = username,
             onValueChange = { loginViewModel.onUsernameChange(it) },
-            label = { Text("Nombre de Usuario") },
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Person Icon") },
+            label = { Text("Correo") },
+            leadingIcon = { Icon(Icons.Default.Mail, contentDescription = "Mail Icon") },
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()

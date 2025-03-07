@@ -7,7 +7,7 @@ import com.example.watpato.core.network.RetrofitHelper
 
 class CreateBookRepository {
 
-    private val service: CreateBookService = RetrofitHelper.createBookService
+    private val service = RetrofitHelper.createService(CreateBookService::class.java)
 
     suspend fun getAllGenres(): Result<List<GenreDTO>> {
         return try {
