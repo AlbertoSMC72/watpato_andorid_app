@@ -16,6 +16,8 @@ import com.example.watpato.BookPreview.presentation.BookPreviewScreen
 import com.example.watpato.BookPreview.presentation.BookPreviewViewModel
 import com.example.watpato.ChapterView.presentation.ChapterScreen
 import com.example.watpato.ChapterView.presentation.ChapterViewModel
+import com.example.watpato.addChapter.presentation.CreateChapterScreen
+import com.example.watpato.addChapter.presentation.CreateChapterViewModel
 import com.example.watpato.home.presentation.Home
 import com.example.watpato.home.presentation.HomeViewModel
 import com.example.watpato.profile.domain.BookSubscriptionUseCase
@@ -82,6 +84,19 @@ fun NavigationWrapper() {
         ) { backStackEntry ->
             val chapterId = backStackEntry.arguments?.getInt("chapterId") ?: 0
             ChapterScreen(viewModel = ChapterViewModel(), chapterId = chapterId)
+        }
+
+        composable("CreateChapter/{bookId}") { backStackEntry ->
+            val viewModel = CreateChapterViewModel()
+            val bookIdParam = backStackEntry.arguments?.getString("bookId")?.toInt() ?: -1
+            CreateChapterScreen(
+                viewModel = viewModel,
+                bookId = bookIdParam,
+                onChapterCreated = {
+                    // Podrías navegar a la lista de capítulos
+                    navController.navigate("Chapter/$bookIdParam")
+                }
+            )
         }
     }
 }
