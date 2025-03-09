@@ -17,4 +17,8 @@ class BookPreviewUseCase {
     suspend fun unsubscribe(userId: Int, bookId: Int): Result<Unit> {
         return bookRepository.unsubscribeToBook(userId, bookId)
     }
+
+    suspend fun isSubscribed(userId: Int, bookId: Int): Result<Boolean> {
+        return bookRepository.isSubscribedToBook(userId, bookId)
+    }
 }

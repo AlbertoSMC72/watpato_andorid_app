@@ -30,9 +30,9 @@ fun NavigationWrapper() {
     val bookSubscriptionUseCase = BookSubscriptionUseCase()
     val userSubscriptionUseCase = UserSubscriptionUseCase()
     val profileUseCase = ProfileUseCase()
-    val userId = 1
+    val userId = 3
 
-    NavHost(navController = navController, startDestination = "Login") {
+    NavHost(navController = navController, startDestination = "Profile/${userId}") {
 
         composable("Login") {
             LoginScreen(LoginViewModel()) { destination ->
@@ -61,7 +61,7 @@ fun NavigationWrapper() {
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
-            BookPreviewScreen(BookPreviewViewModel(), bookId, navController)
+            BookPreviewScreen(BookPreviewViewModel(), bookId, userId, navController)
         }
 
         composable(

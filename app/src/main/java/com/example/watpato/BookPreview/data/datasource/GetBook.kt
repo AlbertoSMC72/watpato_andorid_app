@@ -2,6 +2,7 @@ package com.example.watpato.BookPreview.data.datasource
 
 import com.example.watpato.BookPreview.data.model.entities.Book
 import com.example.watpato.BookPreview.data.model.requests.BookSubscriptionRequest
+import com.example.watpato.BookPreview.data.model.response.SubscriptionResponse
 
 import retrofit2.Response
 import retrofit2.http.Body
@@ -13,9 +14,12 @@ interface GetBook {
     @GET("books/{id}")
     suspend fun getBookById(@Path("id") bookId: Int): Response<Book>
 
-    @POST("book/subscribe")
+    @POST("bookSub/book/subscribe")
     suspend fun subscribeToBook(@Body request: BookSubscriptionRequest)
 
-    @POST("book/unsubscribe")
+    @POST("bookSub/book/unsubscribe")
     suspend fun unsubscribeToBook(@Body request: BookSubscriptionRequest)
+
+    @GET("bookSub/user/{userId}/book/{bookId}/isSubscribed")
+    suspend fun isSubscribedToBook(@Path("userId") userId: Int, @Path("bookId") bookId: Int): Response<SubscriptionResponse>
 }

@@ -14,6 +14,9 @@ class BookPreviewViewModel : ViewModel() {
     private val _book = MutableLiveData<Book?>()
     val book: LiveData<Book?> = _book
 
+    private val _isSubscribed = MutableLiveData<Boolean>()
+    val isSubscribed: LiveData<Boolean> = _isSubscribed
+
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
@@ -31,6 +34,28 @@ class BookPreviewViewModel : ViewModel() {
                 _errorMessage.value = exception.message ?: "Error :O"
             }
             _isLoading.value = false
+        }
+    }
+
+    fun checkSubscription(userId: Int, bookId: Int) {
+        viewModelScope.launch {
+            bookPreviewUseCase.isSubscribed(userId, bookId).onSuccess {
+                _isSubscribed.value = it
+            }
+        }
+    }
+
+    fun toggleSubscription(userId: Int, bookId: Int) {
+        viewModelScope.launch {
+            if (_isSubscribed.value == true) {
+                bookPreviewUseCase.unsubscribe(userId, bookId).onSuccess {
+                    _isSubscribed.value = false
+                }
+            } else {
+                bookPreviewUseCase.subscribe(userId, bookId).onSuccess {
+                    _isSubscribed.value = true
+                }
+            }
         }
     }
 }

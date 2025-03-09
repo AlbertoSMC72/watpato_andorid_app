@@ -40,4 +40,18 @@ class BookRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun isSubscribedToBook(userId: Int, bookId: Int): Result<Boolean> {
+        return try {
+            val response = bookService.isSubscribedToBook(userId, bookId)
+            if (response.isSuccessful) {
+                val subscriptionResponse = response.body()
+                Result.success(subscriptionResponse?.isSubscribed ?: false)
+            } else {
+                Result.failure(Exception("Error al verificar suscripción"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

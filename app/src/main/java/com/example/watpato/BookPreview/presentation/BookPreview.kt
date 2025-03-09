@@ -1,5 +1,6 @@
 package com.example.watpato.BookPreview.presentation
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -24,21 +27,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.watpato.BookPreview.data.model.entities.Book
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
 @Composable
 fun BookPreviewScreen(
     viewModel: BookPreviewViewModel,
     bookId: Int,
+    userId: Int,
     navController: NavController
 ) {
     val book by viewModel.book.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val error by viewModel.errorMessage.observeAsState()
+    val isSubscribed by viewModel.isSubscribed.observeAsState(initial = false)
+
+    Log.d("BookPreviewScreen", "Data received: book: $book, isLoading: $isLoading, error: $error, isSubscribed: $isSubscribed, userId: $userId, bookId: $bookId")
 
     LaunchedEffect(key1 = bookId) {
         viewModel.getBook(bookId)
+        viewModel.checkSubscription(userId, bookId)
     }
+
+    Log.d("BookPreviewScreen", "isSubscribed: $isSubscribed")
 
     Box(
         modifier = Modifier
@@ -59,14 +70,24 @@ fun BookPreviewScreen(
                 )
             }
             book != null -> {
-                BookContent(book = book!!, navController = navController)
+                BookContent(
+                    book = book!!,
+                    navController = navController,
+                    isSubscribed = isSubscribed,
+                    onSubscriptionToggle = { viewModel.toggleSubscription(userId, bookId) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun BookContent(book: Book, navController: NavController) {
+fun BookContent(
+    book: Book,
+    navController: NavController,
+    isSubscribed: Boolean,
+    onSubscriptionToggle: () -> Unit
+) {
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -77,6 +98,18 @@ fun BookContent(book: Book, navController: NavController) {
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
+
+        Button(
+            onClick = onSubscriptionToggle,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isSubscribed) Color.Red else Color.Green
+            ),
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Text(
+                text = if (isSubscribed) "Dejar de seguir" else "Suscribir"
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
