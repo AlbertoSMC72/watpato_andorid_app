@@ -83,4 +83,18 @@ class ProfileRepository {
             Result.failure(e)
         }
     }
+
+    suspend fun isSubscribedToUser(userId: Int, writerId: Int): Result<Boolean> {
+        return try {
+            val response = profileService.isSubscribedToUser(userId, writerId)
+            if (response.isSuccessful) {
+                val subscriptionResponse = response.body()
+                Result.success(subscriptionResponse?.isSubscribed ?: false)
+            } else {
+                Result.failure(Exception("Error al verificar suscripción"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

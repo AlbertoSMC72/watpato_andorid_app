@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.watpato.core.data.UserInfoProvider
 import com.example.watpato.login.domain.LoginUseCase
 import kotlinx.coroutines.launch
 
@@ -47,7 +48,7 @@ class LoginViewModel : ViewModel() {
             val result = loginUseCase(emailValue, passwordValue)
             result.onSuccess { username ->
                 _errorMessage.value = null
-                _navigationCommand.value = "Home"
+                _navigationCommand.value = "Profile/${UserInfoProvider.userID}"
             }.onFailure { exception ->
                 _errorMessage.value = exception.message ?: "Error desconocido"
             }

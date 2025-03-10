@@ -1,8 +1,11 @@
 package com.example.watpato.profile.presentation
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,17 +18,28 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.watpato.profile.data.model.entities.UserProfile
 import com.example.watpato.profile.data.model.subscriptions.BookSubscription
 import com.example.watpato.profile.data.model.subscriptions.UserSubscription
+
+val DarkPurple = Color(0xFF543F69)
+val LightPurple = Color(0xFFE6DFEB)
+val Follow = Color(0xFF81D32F)
+val Unfollow = Color(0xFFD32F2F)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     userId: Int,
+    writerId: Int,
     navController: NavController
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -35,30 +49,37 @@ fun ProfileScreen(
     val bookSubscriptions by viewModel.bookSubscriptions.observeAsState()
     val userSubscriptions by viewModel.userSubscriptions.observeAsState()
     val booksByUser by viewModel.booksByUser.observeAsState()
+    val isSubscribed by viewModel.isSubscribed.observeAsState(initial = false)
+
+    Log.d("BookPreviewScreen", "Data received: isSubscribed: $isSubscribed, userId: $userId, writerId: $writerId")
 
     LaunchedEffect(userId) {
         viewModel.loadUserProfile(userId)
         viewModel.loadSubscriptions(userId)
+        viewModel.checkSubscription(userId, writerId)
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Perfil") },
+                title = { Text("Perfil", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate("Home") }) {
-                        Icon(imageVector = Icons.Filled.Home, contentDescription = "Home")
+                        Icon(imageVector = Icons.Filled.Home, contentDescription = "Home", tint = Color.White)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkPurple)
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = DarkPurple
+            ) {
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = { Icon(imageVector = icons[index], contentDescription = item) },
-                        label = { Text(item) },
+                        icon = { Icon(imageVector = icons[index], contentDescription = item, tint = Color.White) },
+                        label = { Text(item, color = Color.White) },
                         selected = selectedItem == index,
                         onClick = { selectedItem = index }
                     )
@@ -75,7 +96,12 @@ fun ProfileScreen(
             when (selectedItem) {
                 0 -> BookSubscriptionsView(bookSubscriptions, navController)
                 1 -> UserSubscriptionsView(userSubscriptions, navController)
-                2 -> UserProfileView(booksByUser, navController)
+                2 -> UserProfileView(
+                    userProfile = booksByUser,
+                    navController = navController,
+                    isSubscribed = isSubscribed,
+                    onSubscriptionToggle = { viewModel.toggleSubscription(userId, writerId) }
+                )
             }
         }
     }
@@ -102,7 +128,11 @@ fun BookSubscriptionsView(bookSubscriptions: Result<BookSubscription>?, navContr
 
         bookSubscriptions?.fold(
             onSuccess = { subscription ->
-                LazyColumn {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     items(subscription.subscriptions) { book ->
                         Card(
                             modifier = Modifier
@@ -191,20 +221,46 @@ fun UserSubscriptionsView(userSubscriptions: Result<UserSubscription>?, navContr
 }
 
 @Composable
-fun UserProfileView(userProfile: Result<UserProfile>?, navController: NavController) {
+fun UserProfileView(
+    userProfile: Result<UserProfile>?,
+    navController: NavController,
+    isSubscribed: Boolean,
+    onSubscriptionToggle: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         userProfile?.fold(
             onSuccess = { profile ->
-                Text(
-                    text = profile.user.username,
-                    style = MaterialTheme.typography.headlineMedium
-                )
+
+                Box(
+                    modifier = Modifier
+                        .background(color = LightPurple, shape = RoundedCornerShape(8.dp))
+                        .padding(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = profile.user.username,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = DarkPurple,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Button(
+                            onClick = onSubscriptionToggle,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSubscribed) Unfollow else Follow
+                            )
+                        ) {
+                            Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Divider()
@@ -219,7 +275,11 @@ fun UserProfileView(userProfile: Result<UserProfile>?, navController: NavControl
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                LazyColumn {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                )  {
                     items(profile.books) { book ->
                         Card(
                             modifier = Modifier
@@ -232,11 +292,11 @@ fun UserProfileView(userProfile: Result<UserProfile>?, navController: NavControl
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     text = book.title,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
                                 )
                                 Text(
                                     text = book.description,
-                                    style = MaterialTheme.typography.bodySmall
+                                    style = MaterialTheme.typography.bodySmall,
                                 )
                             }
                         }

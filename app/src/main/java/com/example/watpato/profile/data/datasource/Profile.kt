@@ -3,6 +3,7 @@ package com.example.watpato.profile.data.datasource
 import com.example.watpato.profile.data.model.requests.UserSubscriptionRequest
 import com.example.watpato.profile.data.model.entities.User
 import com.example.watpato.profile.data.model.entities.UserProfile
+import com.example.watpato.profile.data.model.response.SubscriptionResponse
 import com.example.watpato.profile.data.model.subscriptions.BookSubscription
 import com.example.watpato.profile.data.model.subscriptions.UserSubscription
 import retrofit2.Response
@@ -19,10 +20,10 @@ interface Profile {
     @GET("bookSub/{id}")
     suspend fun getBookSubscriptions(@Path("id") userId: Int): Response<BookSubscription>
 
-    @POST("user/subscribe")
+    @POST("writerSub/user/subscribe")
     suspend fun subscribeToUser(@Body request: UserSubscriptionRequest)
 
-    @POST("user/unsubscribe")
+    @POST("writerSub/user/unsubscribe")
     suspend fun unsubscribeToUser(@Body request: UserSubscriptionRequest)
 
     @GET("users/{id}")
@@ -30,4 +31,7 @@ interface Profile {
 
     @GET("books/author/{id}")
     suspend fun getBooksByAuthor(@Path("id") authorId: Int): Response<UserProfile>
+
+    @GET("writerSub/user/{userId}/writer/{writerId}/isSubscribed")
+    suspend fun isSubscribedToUser(@Path("userId") userId: Int, @Path("writerId") writerId: Int): Response<SubscriptionResponse>
 }

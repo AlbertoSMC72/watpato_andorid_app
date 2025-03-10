@@ -27,6 +27,9 @@ class ProfileViewModel(
     private val _booksByUser = MutableLiveData<Result<UserProfile>>()
     val booksByUser: LiveData<Result<UserProfile>> = _booksByUser
 
+    private val _isSubscribed = MutableLiveData<Boolean>()
+    val isSubscribed: LiveData<Boolean> = _isSubscribed
+
     fun loadUserProfile(userId: Int) {
         viewModelScope.launch {
             _booksByUser.postValue(profileUseCase.getBooksByAuthor(userId))
@@ -37,6 +40,32 @@ class ProfileViewModel(
         viewModelScope.launch {
             _bookSubscriptions.postValue(bookSubscriptionUseCase.getBookSubscriptions(userId))
             _userSubscriptions.postValue(userSubscriptionUseCase.getUserSubscriptions(userId))
+        }
+    }
+
+    fun checkSubscription(userId: Int, writerId: Int) {
+        viewModelScope.launch {
+            profileUseCase.isSubscribed(userId, writerId).onSuccess {
+                _isSubscribed.value = it
+            }
+        }
+    }
+
+    fun toggleSubscription(userId: Int, writerId: Int) {
+        viewModelScope.launch {
+            if (_isSubscribed.value == true) {
+                profileUseCase.unsubscribe(userId, writerId).onSuccess {
+                    _isSubscribed.value = false
+                    loadUserProfile(writerId)
+                    loadSubscriptions(userId)
+                }
+            } else {
+                profileUseCase.subscribe(userId, writerId).onSuccess {
+                    _isSubscribed.value = true
+                    loadUserProfile(writerId)
+                    loadSubscriptions(userId)
+                }
+            }
         }
     }
 }

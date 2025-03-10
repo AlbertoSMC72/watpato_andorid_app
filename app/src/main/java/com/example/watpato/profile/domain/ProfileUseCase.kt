@@ -10,4 +10,16 @@ class ProfileUseCase {
     suspend fun getBooksByAuthor(authorId: Int): Result<UserProfile> {
         return profileRepository.getBooksByAuthor(authorId)
     }
+
+    suspend fun subscribe(userId: Int, writerId: Int): Result<Unit> {
+        return profileRepository.subscribeToUser(userId, writerId)
+    }
+
+    suspend fun unsubscribe(userId: Int, writerId: Int): Result<Unit> {
+        return profileRepository.unsubscribeToUser(userId, writerId)
+    }
+
+    suspend fun isSubscribed(userId: Int, writerId: Int): Result<Boolean> {
+        return profileRepository.isSubscribedToUser(userId, writerId)
+    }
 }

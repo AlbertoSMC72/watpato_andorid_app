@@ -32,7 +32,7 @@ fun NavigationWrapper() {
     val bookSubscriptionUseCase = BookSubscriptionUseCase()
     val userSubscriptionUseCase = UserSubscriptionUseCase()
     val profileUseCase = ProfileUseCase()
-    val userId = 3
+    val userId = 6
 
     NavHost(navController = navController, startDestination = "Profile/${userId}") {
 
@@ -70,10 +70,11 @@ fun NavigationWrapper() {
             route = "Profile/{userId}",
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
+            val writerId = backStackEntry.arguments?.getInt("userId") ?: 0
             ProfileScreen(
                 viewModel = ProfileViewModel(bookSubscriptionUseCase, userSubscriptionUseCase, profileUseCase),
                 userId = userId,
+                writerId = writerId,
                 navController = navController
             )
         }

@@ -1,15 +1,18 @@
 package com.example.watpato.BookPreview.presentation
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +33,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
+val DarkPurple = Color(0xFF543F69)
+val LightPurple = Color(0xFFE6DFEB)
+val Follow = Color(0xFF81D32F)
+val Unfollow = Color(0xFFD32F2F)
+
 @Composable
 fun BookPreviewScreen(
     viewModel: BookPreviewViewModel,
@@ -48,8 +56,6 @@ fun BookPreviewScreen(
         viewModel.getBook(bookId)
         viewModel.checkSubscription(userId, bookId)
     }
-
-    Log.d("BookPreviewScreen", "isSubscribed: $isSubscribed")
 
     Box(
         modifier = Modifier
@@ -93,28 +99,60 @@ fun BookContent(
             .verticalScroll(rememberScrollState())
             .padding(8.dp)
     ) {
-        Text(
-            text = book.title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
 
-        Button(
-            onClick = onSubscriptionToggle,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isSubscribed) Color.Red else Color.Green
-            ),
-            modifier = Modifier.padding(start = 8.dp)
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(
+            modifier = Modifier
+                .background(color = DarkPurple, shape = RoundedCornerShape(8.dp))
+                .padding(12.dp)
         ) {
-            Text(
-                text = if (isSubscribed) "Dejar de seguir" else "Suscribir"
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = book.title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+                Button(
+                    onClick = onSubscriptionToggle,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSubscribed) Unfollow else Follow
+                    )
+                ) {
+                    Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
+            text = "Descripción:",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
             text = book.description,
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Autor:",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = book.author_name,
             style = MaterialTheme.typography.bodyLarge
         )
 
