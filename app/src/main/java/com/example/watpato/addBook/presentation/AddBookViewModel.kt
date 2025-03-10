@@ -10,6 +10,7 @@ import com.example.watpato.addBook.data.model.GenreDTO
 import com.example.watpato.addBook.domain.CreateBookUseCase
 import com.example.watpato.addBook.domain.CreateGenreUseCase
 import com.example.watpato.addBook.domain.GetAllGenresUseCase
+import com.example.watpato.core.data.UserInfoProvider
 import kotlinx.coroutines.launch
 
 class CreateBookViewModel : ViewModel() {
@@ -106,7 +107,7 @@ class CreateBookViewModel : ViewModel() {
         val request = BookRequest(
             title = titleValue,
             description = descriptionValue,
-            authorId = 1,
+            authorId = UserInfoProvider.userID,
             genreIds = selectedGenres
         )
 

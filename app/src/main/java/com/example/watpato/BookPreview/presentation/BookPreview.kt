@@ -41,6 +41,7 @@ import com.example.watpato.BookPreview.data.model.entities.Book
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.example.watpato.core.data.UserInfoProvider
 
 val DarkPurple = Color(0xFF543F69)
 val Follow = Color(0xFF81D32F)
@@ -50,13 +51,13 @@ val Unfollow = Color(0xFFD32F2F)
 fun BookPreviewScreen(
     viewModel: BookPreviewViewModel,
     bookId: Int,
-    userId: Int,
     navController: NavController
 ) {
     val book by viewModel.book.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val error by viewModel.errorMessage.observeAsState()
     val isSubscribed by viewModel.isSubscribed.observeAsState(initial = false)
+    val userId = UserInfoProvider.userID
 
     Log.d("BookPreviewScreen", "Data received: book: $book, isLoading: $isLoading, error: $error, isSubscribed: $isSubscribed, userId: $userId, bookId: $bookId")
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.watpato.core.data.UserInfoProvider
 
 val DarkPurple = Color(0xFF543F69)
 val Follow = Color(0xFF81D32F)
@@ -40,12 +41,12 @@ val Unfollow = Color(0xFFD32F2F)
 @Composable
 fun WriterView(
     viewModel: WriterViewModel,
-    userId: Int,
     authorId: Int,
     navController: NavController
 ) {
     val userProfile by viewModel.userProfile.observeAsState()
     val isSubscribed by viewModel.isSubscribed.observeAsState(initial = false)
+    val userId = UserInfoProvider.userID
 
     LaunchedEffect(authorId) {
         viewModel.loadAuthorBooks(authorId)

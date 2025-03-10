@@ -27,6 +27,8 @@ import com.example.watpato.profile.domain.ProfileUseCase
 import com.example.watpato.profile.domain.UserSubscriptionUseCase
 import com.example.watpato.profile.presentation.ProfileScreen
 import com.example.watpato.profile.presentation.ProfileViewModel
+import com.example.watpato.writerView.WriterView
+import com.example.watpato.writerView.WriterViewModel
 
 @Composable
 fun NavigationWrapper() {
@@ -65,7 +67,7 @@ fun NavigationWrapper() {
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
-            BookPreviewScreen(BookPreviewViewModel(), bookId, userId, navController)
+            BookPreviewScreen(BookPreviewViewModel(), bookId, navController)
         }
 
         composable(
@@ -97,6 +99,15 @@ fun NavigationWrapper() {
                 onChapterCreated = {
                     navController.navigate("Chapter/$bookIdParam")
                 }
+            )
+        }
+
+        composable("WriterProfile/{authorId}", arguments = listOf(navArgument("authorId") { type = NavType.IntType })) { backStackEntry ->
+            val authorId = backStackEntry.arguments?.getInt("authorId") ?: 0
+            WriterView(
+                viewModel = WriterViewModel(ProfileUseCase()),
+                authorId = authorId,
+                navController = navController
             )
         }
     }
