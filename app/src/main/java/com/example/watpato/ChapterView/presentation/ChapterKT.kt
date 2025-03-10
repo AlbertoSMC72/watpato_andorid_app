@@ -1,5 +1,6 @@
 package com.example.watpato.ChapterView.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.watpato.ChapterView.data.model.Chapter
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import com.example.watpato.profile.presentation.DarkPurple
+import com.example.watpato.profile.presentation.LightPurple
 
 @Composable
 fun ChapterScreen(
@@ -63,28 +70,45 @@ fun ChapterScreen(
 
 @Composable
 fun ChapterContent(chapter: Chapter) {
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        Text(
-            text = chapter.title,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
+        Box(
+            modifier = Modifier
+                .background(color = DarkPurple, shape = RoundedCornerShape(8.dp))
+                .padding(12.dp)
+        ) {
+            Text(
+                text = chapter.title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Fecha de publicación: ${chapter.created_at}",
+            text = "Fecha de publicación",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.End,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = chapter.created_at,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.End
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
