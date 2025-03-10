@@ -25,21 +25,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.AddCircle
 import com.example.watpato.profile.data.model.entities.UserProfile
 import com.example.watpato.profile.data.model.subscriptions.BookSubscription
 import com.example.watpato.profile.data.model.subscriptions.UserSubscription
 
 val DarkPurple = Color(0xFF543F69)
 val LightPurple = Color(0xFFE6DFEB)
-val Follow = Color(0xFF81D32F)
-val Unfollow = Color(0xFFD32F2F)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel,
     userId: Int,
-    writerId: Int,
     navController: NavController
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
@@ -49,14 +47,12 @@ fun ProfileScreen(
     val bookSubscriptions by viewModel.bookSubscriptions.observeAsState()
     val userSubscriptions by viewModel.userSubscriptions.observeAsState()
     val booksByUser by viewModel.booksByUser.observeAsState()
-    val isSubscribed by viewModel.isSubscribed.observeAsState(initial = false)
 
-    Log.d("BookPreviewScreen", "Data received: isSubscribed: $isSubscribed, userId: $userId, writerId: $writerId")
+    Log.d("BookPreviewScreen", "Data received: userId: $userId")
 
     LaunchedEffect(userId) {
         viewModel.loadUserProfile(userId)
         viewModel.loadSubscriptions(userId)
-        viewModel.checkSubscription(userId, writerId)
     }
 
     Scaffold(
@@ -64,7 +60,7 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Perfil", color = Color.White) },
-                navigationIcon = {
+                actions = {
                     IconButton(onClick = { navController.navigate("Home") }) {
                         Icon(imageVector = Icons.Filled.Home, contentDescription = "Home", tint = Color.White)
                     }
@@ -98,9 +94,7 @@ fun ProfileScreen(
                 1 -> UserSubscriptionsView(userSubscriptions, navController)
                 2 -> UserProfileView(
                     userProfile = booksByUser,
-                    navController = navController,
-                    isSubscribed = isSubscribed,
-                    onSubscriptionToggle = { viewModel.toggleSubscription(userId, writerId) }
+                    navController = navController
                 )
             }
         }
@@ -190,7 +184,7 @@ fun UserSubscriptionsView(userSubscriptions: Result<UserSubscription>?, navContr
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp)
                                 .clickable {
-                                    navController.navigate("Profile/${user.id}")
+                                    navController.navigate("WriterProfile/${user.id}")
                                 }
                         ) {
                             Row(
@@ -223,9 +217,7 @@ fun UserSubscriptionsView(userSubscriptions: Result<UserSubscription>?, navContr
 @Composable
 fun UserProfileView(
     userProfile: Result<UserProfile>?,
-    navController: NavController,
-    isSubscribed: Boolean,
-    onSubscriptionToggle: () -> Unit
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -251,14 +243,6 @@ fun UserProfileView(
                             color = DarkPurple,
                             modifier = Modifier.weight(1f)
                         )
-                        Button(
-                            onClick = onSubscriptionToggle,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isSubscribed) Unfollow else Follow
-                            )
-                        ) {
-                            Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
-                        }
                     }
                 }
 
@@ -280,6 +264,32 @@ fun UserProfileView(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 )  {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                                .clickable {
+                                    navController.navigate("AddBook")
+                                },
+                            colors = CardDefaults.cardColors(containerColor = LightPurple),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddCircle,
+                                    contentDescription = "Add Book",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = DarkPurple
+                                )
+                            }
+                        }
+                    }
                     items(profile.books) { book ->
                         Card(
                             modifier = Modifier

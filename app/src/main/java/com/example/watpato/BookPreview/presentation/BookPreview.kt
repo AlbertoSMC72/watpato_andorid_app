@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -118,6 +122,11 @@ fun BookContent(
                         Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
                     }
                 },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkPurple)
             )
         }
@@ -164,7 +173,7 @@ fun BookContent(
                 }
 
                 Button(
-                    onClick = { navController.navigate("Profile/${book.author_id}") },
+                    onClick = { navController.navigate("WriterProfile/${book.author_id}") },
                     colors = ButtonDefaults.buttonColors(containerColor = DarkPurple)
                 ) {
                     Text(text = "Ver", color = Color.White)

@@ -1,5 +1,6 @@
 package com.example.watpato.core.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,7 @@ import com.example.watpato.ChapterView.presentation.ChapterScreen
 import com.example.watpato.ChapterView.presentation.ChapterViewModel
 import com.example.watpato.addChapter.presentation.CreateChapterScreen
 import com.example.watpato.addChapter.presentation.CreateChapterViewModel
+import com.example.watpato.core.data.UserInfoProvider
 import com.example.watpato.home.presentation.Home
 import com.example.watpato.home.presentation.HomeViewModel
 import com.example.watpato.profile.domain.BookSubscriptionUseCase
@@ -32,9 +34,9 @@ fun NavigationWrapper() {
     val bookSubscriptionUseCase = BookSubscriptionUseCase()
     val userSubscriptionUseCase = UserSubscriptionUseCase()
     val profileUseCase = ProfileUseCase()
-    val userId = 6
+    val userId = UserInfoProvider.userID
 
-    NavHost(navController = navController, startDestination = "Profile/${userId}") {
+    NavHost(navController = navController, startDestination = "Login") {
 
         composable("Login") {
             LoginScreen(LoginViewModel()) { destination ->
@@ -53,7 +55,7 @@ fun NavigationWrapper() {
             }
         }
         composable("Home") {
-            Home(HomeViewModel()) { bookId ->
+            Home(HomeViewModel(), navController) { bookId ->
                 navController.navigate("BookPreview/$bookId")
             }
         }
@@ -68,13 +70,12 @@ fun NavigationWrapper() {
 
         composable(
             route = "Profile/{userId}",
-            arguments = listOf(navArgument("userId") { type = NavType.IntType })
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val writerId = backStackEntry.arguments?.getInt("userId") ?: 0
+            val writerId = backStackEntry.arguments?.get("userId").toString().toInt()
             ProfileScreen(
                 viewModel = ProfileViewModel(bookSubscriptionUseCase, userSubscriptionUseCase, profileUseCase),
-                userId = userId,
-                writerId = writerId,
+                userId = writerId,
                 navController = navController
             )
         }
@@ -94,7 +95,6 @@ fun NavigationWrapper() {
                 viewModel = viewModel,
                 bookId = bookIdParam,
                 onChapterCreated = {
-                    // Podrías navegar a la lista de capítulos
                     navController.navigate("Chapter/$bookIdParam")
                 }
             )

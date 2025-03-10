@@ -75,15 +75,12 @@ class CreateBookViewModel : ViewModel() {
     }
 
     fun createNewGenre(name: String) {
-        // Llamar al repositorio para crear un nuevo género
         viewModelScope.launch {
             val result = createGenreUseCase(name)
             result.onSuccess { newGenre ->
-                // Actualizamos la lista de géneros existentes
                 val updated = _genres.value.orEmpty().toMutableList()
                 updated.add(newGenre)
                 _genres.value = updated
-                // También podemos marcarlo como seleccionado automáticamente
                 onGenreSelected(newGenre.id)
             }.onFailure { exception ->
                 _error.value = "Error creando género: ${exception.message}"

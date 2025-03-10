@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -17,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,7 +34,6 @@ fun CreateBookScreen(
     viewModel: CreateBookViewModel,
     onNavigate: (String) -> Unit
 ) {
-    // Observamos los estados
     val title by viewModel.title.observeAsState("")
     val description by viewModel.description.observeAsState("")
     val genres by viewModel.genres.observeAsState(emptyList())
@@ -39,17 +41,46 @@ fun CreateBookScreen(
     val error by viewModel.error.observeAsState("")
     val success by viewModel.success.observeAsState(false)
 
-    // Al iniciar la pantalla cargamos géneros
-    LaunchedEffect(Unit) {
-        viewModel.loadGenres()
+    // Estado para el diálogo de creación de género
+    val showDialog = remember { mutableStateOf(false) }
+    // Nombre temporal para el nuevo género
+    val newGenreName = remember { mutableStateOf("") }
+
+
+    // Si se crea el libro con éxito, vuelve o navega a "Home"
+    if (success) {
+        onNavigate("Home")
     }
 
-    // Si se creó correctamente el libro, podrías navegar o limpiar la UI
-    if (success) {
-        // Ejemplo: navegas a otra pantalla
-        // onNavigate("BookList")
-        // O reinicias el formulario
-        // ...
+    // Modal (AlertDialog) para crear un nuevo género
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = { Text("Crear nuevo género") },
+            text = {
+                TextField(
+                    value = newGenreName.value,
+                    onValueChange = { newGenreName.value = it },
+                    label = { Text("Nombre del género") }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.createNewGenre(newGenreName.value)
+                        newGenreName.value = ""
+                        showDialog.value = false
+                    }
+                ) {
+                    Text("Crear")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDialog.value = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 
     Column(
@@ -90,21 +121,31 @@ fun CreateBookScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Muestra la lista de géneros disponibles
+        // Botón para cargar géneros manualmente
+        Button(
+            onClick = {
+                viewModel.loadGenres()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Beige,
+                contentColor = Teal
+            )
+        ) {
+            Text(text = "Cargar Géneros Guardados")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "Selecciona Géneros:", color = Beige)
         Spacer(modifier = Modifier.height(8.dp))
 
         genres.forEach { genre ->
             val isSelected = selectedGenreIds.contains(genre.id)
-            // Podrías poner un Row con checkbox, etc.
-            // Aquí un ejemplo sencillo con un clickable:
             Text(
                 text = if (isSelected) "✔ ${genre.name}" else genre.name,
                 fontSize = 16.sp,
                 modifier = Modifier
-                    .clickable {
-                        viewModel.onGenreSelected(genre.id)
-                    }
+                    .clickable { viewModel.onGenreSelected(genre.id) }
                     .padding(vertical = 4.dp),
                 color = Beige
             )
@@ -112,13 +153,9 @@ fun CreateBookScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón para crear un nuevo género si no aparece en la lista
+        // Botón para abrir el diálogo de crear género
         Button(
-            onClick = {
-                // Por ejemplo, generas un nuevo género con un nombre random
-                // O usas un showDialog para ingresar nombre
-                viewModel.createNewGenre("NuevoGeneroEjemplo")
-            },
+            onClick = { showDialog.value = true },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Beige,
                 contentColor = Teal
@@ -129,16 +166,11 @@ fun CreateBookScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Mostrar errores
         if (error.isNotEmpty()) {
-            Text(
-                text = error,
-                color = Beige
-            )
+            Text(text = error, color = Beige)
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // Botón final para crear el libro
         Button(
             onClick = { viewModel.createBook() },
             colors = ButtonDefaults.buttonColors(

@@ -59,7 +59,8 @@ dependencies {
     implementation(libs.com.squareup.retrofit2.converter.json)
 
     implementation(libs.androidx.navigation.compose)    //Navegation
-    implementation(libs.kotlinx.serialization.json)     //Navegation
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.media3.common.ktx)     //Navegation
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

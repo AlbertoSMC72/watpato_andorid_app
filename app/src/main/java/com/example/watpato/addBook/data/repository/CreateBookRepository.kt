@@ -27,7 +27,14 @@ class CreateBookRepository {
             val body = mapOf("name" to name)
             val response = service.createGenre(body)
             if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
+                val list = response.body()!!
+                if (list.isNotEmpty()) {
+                    val insertedId = list[0].inserted_id
+                    val newGenre = GenreDTO(id = insertedId, name = name)
+                    Result.success(newGenre)
+                } else {
+                    Result.failure(Exception("Lista de inserted_id vacía."))
+                }
             } else {
                 Result.failure(Exception(response.errorBody()?.string()))
             }
@@ -35,6 +42,7 @@ class CreateBookRepository {
             Result.failure(e)
         }
     }
+
 
     suspend fun createBook(bookRequest: BookRequest): Result<Unit> {
         return try {
