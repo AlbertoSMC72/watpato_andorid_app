@@ -91,15 +91,10 @@ fun NavigationWrapper() {
         }
 
         composable("CreateChapter/{bookId}") { backStackEntry ->
-            val viewModel = CreateChapterViewModel()
             val bookIdParam = backStackEntry.arguments?.getString("bookId")?.toInt() ?: -1
-            CreateChapterScreen(
-                viewModel = viewModel,
-                bookId = bookIdParam,
-                onChapterCreated = {
-                    navController.navigate("Chapter/$bookIdParam")
-                }
-            )
+            CreateChapterScreen(CreateChapterViewModel(bookIdParam)) { destination ->
+                navController.navigate(destination)
+            }
         }
 
         composable("WriterProfile/{authorId}", arguments = listOf(navArgument("authorId") { type = NavType.IntType })) { backStackEntry ->

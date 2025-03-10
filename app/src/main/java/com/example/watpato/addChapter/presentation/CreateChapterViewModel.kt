@@ -8,22 +8,19 @@ import com.example.watpato.addChapter.data.model.ChapterRequest
 import com.example.watpato.addChapter.domain.CreateChapterUseCase
 import kotlinx.coroutines.launch
 
-class CreateChapterViewModel : ViewModel() {
+class CreateChapterViewModel(bookId: Int) : ViewModel() {
 
     private val createChapterUseCase = CreateChapterUseCase()
 
-    // Campos para título y contenido
     private val _title = MutableLiveData<String>("")
     val title: LiveData<String> = _title
 
     private val _content = MutableLiveData<String>("")
     val content: LiveData<String> = _content
 
-    // bookId (puedes establecerlo cuando navegues a esta pantalla)
-    private val _bookId = MutableLiveData<Int>(-1)
+    private val _bookId = MutableLiveData<Int>(bookId)
     val bookId: LiveData<Int> = _bookId
 
-    // Control de estado
     private val _error = MutableLiveData<String>("")
     val error: LiveData<String> = _error
 
@@ -38,16 +35,11 @@ class CreateChapterViewModel : ViewModel() {
         _content.value = newContent
     }
 
-    fun setBookId(id: Int) {
-        _bookId.value = id
-    }
-
     fun createChapter() {
         val currentTitle = _title.value?.trim().orEmpty()
         val currentContent = _content.value?.trim().orEmpty()
         val currentBookId = _bookId.value ?: -1
 
-        // Validaciones
         if (currentTitle.isBlank() || currentContent.isBlank()) {
             _error.value = "Por favor, completa todos los campos"
             return

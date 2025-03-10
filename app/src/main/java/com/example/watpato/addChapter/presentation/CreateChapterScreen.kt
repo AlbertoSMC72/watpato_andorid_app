@@ -27,20 +27,16 @@ import com.example.watpato.ui.theme.Teal
 @Composable
 fun CreateChapterScreen(
     viewModel: CreateChapterViewModel,
-    bookId: Int,
-    onChapterCreated: () -> Unit
+    onNavigate: (String) -> Unit
 ) {
     val title by viewModel.title.observeAsState("")
     val content by viewModel.content.observeAsState("")
     val error by viewModel.error.observeAsState("")
     val success by viewModel.success.observeAsState(false)
 
-    LaunchedEffect(bookId) {
-        viewModel.setBookId(bookId)
-    }
-
+    // Si se crea el libro con éxito, vuelve o navega a "Home"
     if (success) {
-        onChapterCreated()
+        onNavigate("Home")
     }
 
     Column(

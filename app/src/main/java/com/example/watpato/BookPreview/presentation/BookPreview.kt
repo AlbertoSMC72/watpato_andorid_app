@@ -88,7 +88,9 @@ fun BookPreviewScreen(
                     book = book!!,
                     navController = navController,
                     isSubscribed = isSubscribed,
-                    onSubscriptionToggle = { viewModel.toggleSubscription(userId, bookId) }
+                    onSubscriptionToggle = { viewModel.toggleSubscription(userId, bookId) },
+                    userId = userId,
+                    bookId = bookId
                 )
             }
         }
@@ -101,8 +103,11 @@ fun BookContent(
     book: Book,
     navController: NavController,
     isSubscribed: Boolean,
-    onSubscriptionToggle: () -> Unit
+    onSubscriptionToggle: () -> Unit,
+    userId: Int,
+    bookId: Int
 ) {
+    Log.d("BookId", bookId.toString())
     Scaffold(
         topBar = {
             TopAppBar(
@@ -198,6 +203,17 @@ fun BookContent(
             Spacer(modifier = Modifier.height(16.dp))
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
+
+            if (book.author_id == userId) {
+                Button(
+                    onClick = { navController.navigate("CreateChapter/${bookId}") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DarkPurple
+                    )
+                ) {
+                    Text(text = "+")
+                }
+            }
 
             Text(
                 text = "Capítulos:",
