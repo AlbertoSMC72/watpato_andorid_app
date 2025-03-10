@@ -3,6 +3,7 @@ package com.example.watpato.BookPreview.presentation
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +20,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 
 val DarkPurple = Color(0xFF543F69)
-val LightPurple = Color(0xFFE6DFEB)
 val Follow = Color(0xFF81D32F)
 val Unfollow = Color(0xFFD32F2F)
 
@@ -60,7 +64,6 @@ fun BookPreviewScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         when {
             isLoading -> {
@@ -87,6 +90,7 @@ fun BookPreviewScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookContent(
     book: Book,
@@ -94,111 +98,123 @@ fun BookContent(
     isSubscribed: Boolean,
     onSubscriptionToggle: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(8.dp)
-    ) {
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Box(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = book.title,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White
+                    )
+                },
+                actions = {
+                    Button(
+                        onClick = onSubscriptionToggle,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isSubscribed) Unfollow else Follow
+                        )
+                    ) {
+                        Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkPurple)
+            )
+        }
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .background(color = DarkPurple, shape = RoundedCornerShape(8.dp))
-                .padding(12.dp)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp)
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Descripción:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = book.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = book.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
-                    modifier = Modifier.weight(1f)
-                )
-                Button(
-                    onClick = onSubscriptionToggle,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSubscribed) Unfollow else Follow
-                    )
-                ) {
-                    Text(text = if (isSubscribed) "Dejar de seguir" else "Seguir")
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Descripción:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = book.description,
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Autor:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = book.author_name,
-            style = MaterialTheme.typography.bodyLarge
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Géneros:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(text = book.genres.joinToString(", "))
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Capítulos:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        book.chapters.forEach { chapter ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .clickable {
-                        navController.navigate("Chapter/${chapter.id}")
-                    }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(8.dp)
-                ) {
+                Column {
                     Text(
-                        text = chapter.title,
-                        style = MaterialTheme.typography.bodyLarge,
+                        text = "Autor:",
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
+                    Text(
+                        text = book.author_name,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                Button(
+                    onClick = { navController.navigate("Profile/${book.author_id}") },
+                    colors = ButtonDefaults.buttonColors(containerColor = DarkPurple)
+                ) {
+                    Text(text = "Ver", color = Color.White)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Géneros:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = book.genres.joinToString(", "))
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Capítulos:",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            book.chapters.forEach { chapter ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clickable {
+                            navController.navigate("Chapter/${chapter.id}")
+                        }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = chapter.title,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
