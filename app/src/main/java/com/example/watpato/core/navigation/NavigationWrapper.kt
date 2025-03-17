@@ -1,34 +1,36 @@
 package com.example.watpato.core.navigation
 
-import androidx.compose.material3.Text
+import android.app.Application
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.watpato.addBook.presentation.CreateBookScreen
-import com.example.watpato.addBook.presentation.CreateBookViewModel
-import com.example.watpato.login.presentation.LoginScreen
-import com.example.watpato.login.presentation.LoginViewModel
-import com.example.watpato.register.presentation.RegisterScreen
-import com.example.watpato.register.presentation.RegisterViewModel
-import com.example.watpato.BookPreview.presentation.BookPreviewScreen
-import com.example.watpato.BookPreview.presentation.BookPreviewViewModel
-import com.example.watpato.ChapterView.presentation.ChapterScreen
-import com.example.watpato.ChapterView.presentation.ChapterViewModel
-import com.example.watpato.addChapter.presentation.CreateChapterScreen
-import com.example.watpato.addChapter.presentation.CreateChapterViewModel
+import com.example.watpato.features.forms.addBook.presentation.CreateBookScreen
+import com.example.watpato.features.forms.addBook.presentation.CreateBookViewModel
+import com.example.watpato.features.authorization.login.presentation.LoginScreen
+import com.example.watpato.features.authorization.login.presentation.LoginViewModel
+import com.example.watpato.features.authorization.register.presentation.RegisterScreen
+import com.example.watpato.features.authorization.register.presentation.RegisterViewModel
+import com.example.watpato.features.views.BookView.presentation.BookPreviewScreen
+import com.example.watpato.features.views.BookView.presentation.BookPreviewViewModel
+import com.example.watpato.features.views.ChapterView.presentation.ChapterScreen
+import com.example.watpato.features.views.ChapterView.presentation.ChapterViewModel
+import com.example.watpato.features.forms.addChapter.presentation.CreateChapterScreen
+import com.example.watpato.features.forms.addChapter.presentation.CreateChapterViewModel
 import com.example.watpato.core.data.UserInfoProvider
-import com.example.watpato.home.presentation.Home
-import com.example.watpato.home.presentation.HomeViewModel
-import com.example.watpato.profile.domain.BookSubscriptionUseCase
-import com.example.watpato.profile.domain.ProfileUseCase
-import com.example.watpato.profile.domain.UserSubscriptionUseCase
-import com.example.watpato.profile.presentation.ProfileScreen
-import com.example.watpato.profile.presentation.ProfileViewModel
-import com.example.watpato.writerView.WriterView
-import com.example.watpato.writerView.WriterViewModel
+import com.example.watpato.core.local.appDatabase.DatabaseProvider
+import com.example.watpato.features.home.presentation.Home
+import com.example.watpato.features.home.presentation.HomeViewModel
+import com.example.watpato.features.views.profileView.domain.BookSubscriptionUseCase
+import com.example.watpato.features.views.profileView.domain.ProfileUseCase
+import com.example.watpato.features.views.profileView.domain.UserSubscriptionUseCase
+import com.example.watpato.features.views.profileView.presentation.ProfileScreen
+import com.example.watpato.features.views.profileView.presentation.ProfileViewModel
+import com.example.watpato.features.views.writerView.WriterView
+import com.example.watpato.features.views.writerView.WriterViewModel
 
 @Composable
 fun NavigationWrapper() {
@@ -75,8 +77,11 @@ fun NavigationWrapper() {
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val writerId = backStackEntry.arguments?.get("userId").toString().toInt()
+            val context = LocalContext.current.applicationContext
+            val database = DatabaseProvider.getAppDataBase(context)
+            val chapterDAO = database.chapterDAO()
             ProfileScreen(
-                viewModel = ProfileViewModel(bookSubscriptionUseCase, userSubscriptionUseCase, profileUseCase),
+                viewModel = ProfileViewModel(bookSubscriptionUseCase, userSubscriptionUseCase, profileUseCase, chapterDAO),
                 userId = writerId,
                 navController = navController
             )
@@ -87,7 +92,9 @@ fun NavigationWrapper() {
             arguments = listOf(navArgument("chapterId") { type = NavType.IntType })
         ) { backStackEntry ->
             val chapterId = backStackEntry.arguments?.getInt("chapterId") ?: 0
-            ChapterScreen(viewModel = ChapterViewModel(), chapterId = chapterId)
+            val context = LocalContext.current.applicationContext
+            val application = context.applicationContext as Application
+            ChapterScreen(viewModel = ChapterViewModel(application), chapterId = chapterId)
         }
 
         composable("CreateChapter/{bookId}") { backStackEntry ->
