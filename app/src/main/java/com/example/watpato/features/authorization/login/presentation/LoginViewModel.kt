@@ -56,6 +56,10 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    fun navigateToDownloads() {
+        _navigationCommand.value = "Profile/${UserInfoProvider.userID}"
+    }
+
     fun onNavigationHandled() {
         _navigationCommand.value = null
     }

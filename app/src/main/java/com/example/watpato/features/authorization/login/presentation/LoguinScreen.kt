@@ -174,5 +174,23 @@ fun LoginScreen(loginViewModel: LoginViewModel, onNavigate: (String) -> Unit) {
                 .fillMaxWidth()
                 .clickable { loginViewModel.navigateToRegister() }
         )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { loginViewModel.navigateToDownloads() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Beige,
+                contentColor = Teal
+            )
+        ) {
+            Text(
+                text = "Ver mis libros descargados",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
