@@ -30,22 +30,19 @@ class DownloadService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("Download_chapter", "Descargando libro")
 
-        // Construimos la notificación para el Foreground
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Guardando capítulo...")
             .setContentText("Procesando en segundo plano")
-            .setSmallIcon(R.drawable.watpato) // tu ícono
+            .setSmallIcon(R.drawable.watpato)
             .build()
 
-        // Iniciar como servicio en primer plano
         startForeground(NOTIFICATION_ID, notification)
 
-        // Obtener los datos que envías desde el ViewModel
         val chapterTitle = intent?.getStringExtra("CHAPTER_TITLE") ?: "Sin Título"
         val chapterContent = intent?.getStringExtra("CHAPTER_CONTENT") ?: "Sin Contenido"
         val chapterDate = intent?.getStringExtra("CHAPTER_DATE") ?: "N/A"
 
-        // Realizamos la operación en una corrutina
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 delay(5000)

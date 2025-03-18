@@ -44,14 +44,11 @@ class ChapterViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // --- NUEVA IMPLEMENTACIÓN ---
     fun saveChapter(chapter: Chapter) {
         Log.d("ChapterViewModel", "Iniciando ForegroundService con: $chapter")
 
-        // 1) Obtenemos el contexto de la aplicación
         val context = getApplication<Application>().applicationContext
 
-        // 2) Creamos el Intent para arrancar nuestro DownloadService
         val serviceIntent = Intent(context, DownloadService::class.java).apply {
             putExtra("CHAPTER_TITLE", chapter.title)
             putExtra("CHAPTER_CONTENT", chapter.content)
