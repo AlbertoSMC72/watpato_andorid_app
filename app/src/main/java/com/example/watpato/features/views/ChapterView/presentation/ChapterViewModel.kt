@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.watpato.features.views.ChapterView.data.model.Chapter
 import com.example.watpato.features.views.ChapterView.data.repository.local.LocalChapterRepository
 import com.example.watpato.features.views.ChapterView.domain.ChapterViewUseCase
-import com.example.watpato.features.views.ChapterView.domain.DownloadService
+import com.example.watpato.core.service.DownloadService
 import kotlinx.coroutines.launch
 
 class ChapterViewModel(application: Application) : AndroidViewModel(application) {

@@ -1,4 +1,4 @@
-package com.example.watpato.features.views.ChapterView.domain
+package com.example.watpato.core.service
 
 import android.app.Notification
 import android.app.NotificationChannel

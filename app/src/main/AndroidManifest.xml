@@ -33,7 +33,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".features.views.ChapterView.domain.DownloadService"
+            android:name=".core.service.DownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" >
         </service>
